@@ -1,6 +1,6 @@
 package deepl
 
-// Language codes
+// Language codes.
 const (
 	English = "EN"
 	German  = "DE"

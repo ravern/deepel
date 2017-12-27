@@ -4,23 +4,24 @@ import (
 	"time"
 )
 
-// Client is a configurable client for the DeepL API
+// Client is a configurable client for the DeepL API.
 type Client struct {
 	Config
 }
 
-// Config defines config options for the Client
+// Config for the Client.
 type Config struct {
 	PreferredLangs []string      // Preferred languages of the client.
 	Timeout        time.Duration // Timeout for requests.
 }
 
+// The default configuration used for clients.
 var DefaultConfig = Config{
 	PreferredLangs: []string{English},
 	Timeout:        10 * time.Second,
 }
 
-// NewClient returns a new client with the default configuration.
+// NewClient returns a new client with the DefaultConfig.
 func NewClient() *Client {
 	return &Client{
 		Config: DefaultConfig,
@@ -40,8 +41,9 @@ func (cli *Client) newCall(method string) call {
 	}
 }
 
-// SplitSentences splits the texts into sentences via the DeepL API.
-func (cli *Client) SplitSentences(texts []string, lang string) ([][]string, error) {
+// SplitIntoSentences splits the texts into sentences via the DeepL API. Each text given
+// will be split into its own slice of sentences.
+func (cli *Client) SplitIntoSentences(texts []string, lang string) ([][]string, error) {
 	c := cli.newCall("LMT_split_into_sentences")
 	c.Params.Lang.LangUserSelected = lang
 	c.Params.Texts = texts
