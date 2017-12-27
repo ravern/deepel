@@ -15,7 +15,7 @@ type params struct {
 
 type job struct {
 	DeSentenceBeginning string `json:"de_setence_beginning"`
-	RawEnSetence        string `json:"raw_en_sentence"`
+	RawEnSentence       string `json:"raw_en_sentence"`
 	Kind                string `json:"kind"`
 }
 
@@ -34,7 +34,18 @@ type reply struct {
 }
 
 type result struct {
-	Lang            string     `json:"lang"`
-	LangIsConfident int        `json:"lang_is_confident"`
-	SplittedTexts   [][]string `json:"splitted_texts"`
+	Lang            string        `json:"lang"`
+	SourceLang      string        `json:"source_lang"`
+	TargetLang      string        `json:"target_lang"`
+	LangIsConfident int           `json:"lang_is_confident"`
+	SplittedTexts   [][]string    `json:"splitted_texts"`
+	Translations    []translation `json:"translations"`
+}
+
+type translation struct {
+	Beams []beam `json:"beams"`
+}
+
+type beam struct {
+	PostprocessedSentence string `json:"postprocessed_sentence"`
 }

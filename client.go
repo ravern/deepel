@@ -53,5 +53,47 @@ func (cli *Client) SplitIntoSentences(texts []string, lang string) ([][]string, 
 		return nil, err
 	}
 
-	return r.Result.SplittedTexts, nil
+	sens := r.Result.SplittedTexts
+
+	return sens, nil
+}
+
+// Translate translates the given sentences to the target language via the DeepL API,
+// returning all the possible translations. They are returned in descending order of
+// confidence (i.e. Most to least confident).
+func (cli *Client) Translate(stcs []string, source, target string) ([][]string, error) {
+	c := cli.newCall("LMT_handle_jobs")
+	c.Params.Lang.SourceLangUserSelected = source
+	c.Params.Lang.TargetLang = target
+
+	// Loop and add each sentence as a job
+	for _, stc := range stcs {
+		j := job{
+			RawEnSentence: stc,
+			Kind:          "default",
+		}
+		c.Params.Jobs = append(c.Params.Jobs, j)
+	}
+
+	r, err := request(c, cli.Timeout)
+	if err != nil {
+		return nil, err
+	}
+
+	trans := [][]string{}
+	for _, t := range r.Result.Translations {
+		trans = append(trans, []string{})
+		for _, b := range t.Beams {
+			cur := len(trans) - 1
+			trans[cur] = append(trans[cur], b.PostprocessedSentence)
+		}
+	}
+
+	return trans, nil
+}
+
+// TranslateBegin is the same as Translate, with the added constraint that
+// the result must start with the given beginning.
+func (cli *Client) TranslateBegin(stcs []string, source, target, begin string) ([][]string, error) {
+	return nil, nil
 }
