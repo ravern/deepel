@@ -1,5 +1,12 @@
 package deepl
 
-func Translate(text string, source string, target string) (string, error) {
-	return "", nil
-}
+// Language codes
+const (
+	English = "EN"
+	German  = "DE"
+	French  = "FR"
+	Spanish = "ES"
+	Italian = "IT"
+	Dutch   = "NL"
+	Polish  = "PL"
+)
