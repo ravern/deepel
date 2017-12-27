@@ -62,15 +62,26 @@ func (cli *Client) SplitIntoSentences(texts []string, lang string) ([][]string, 
 // returning all the possible translations. They are returned in descending order of
 // confidence (i.e. Most to least confident).
 func (cli *Client) Translate(stcs []string, source, target string) ([][]string, error) {
+	begin := []string{}
+	for _ = range stcs {
+		begin = append(begin, "")
+	}
+	return cli.TranslateBegin(stcs, begin, source, target)
+}
+
+// TranslateBegin is the same as Translate, with the added constraint that
+// the result must start with the given beginnings.
+func (cli *Client) TranslateBegin(stcs, begin []string, source, target string) ([][]string, error) {
 	c := cli.newCall("LMT_handle_jobs")
 	c.Params.Lang.SourceLangUserSelected = source
 	c.Params.Lang.TargetLang = target
 
 	// Loop and add each sentence as a job
-	for _, stc := range stcs {
+	for i, stc := range stcs {
 		j := job{
-			RawEnSentence: stc,
-			Kind:          "default",
+			DeSentenceBeginning: begin[i],
+			RawEnSentence:       stc,
+			Kind:                "default",
 		}
 		c.Params.Jobs = append(c.Params.Jobs, j)
 	}
@@ -90,10 +101,4 @@ func (cli *Client) Translate(stcs []string, source, target string) ([][]string, 
 	}
 
 	return trans, nil
-}
-
-// TranslateBegin is the same as Translate, with the added constraint that
-// the result must start with the given beginning.
-func (cli *Client) TranslateBegin(stcs []string, source, target, begin string) ([][]string, error) {
-	return nil, nil
 }

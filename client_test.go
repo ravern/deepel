@@ -1,6 +1,7 @@
 package deepl_test
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -74,6 +75,56 @@ func TestTranslate(t *testing.T) {
 			return
 		}
 		if !reflect.DeepEqual(test.Expected, res) {
+			t.Errorf("Test %d: Expected %v but got %v.", i+1, test.Expected, res)
+		}
+	}
+}
+
+func TestTranslateBegin(t *testing.T) {
+	tests := []struct {
+		Sentences  []string
+		Beginnings []string
+		Expected   [][]string
+	}{
+		{
+			[]string{
+				"Hello world!",
+				"This is the unofficial Go client for DeepL. Cheers!",
+			},
+			[]string{
+				"Welt",
+				"Dies",
+			},
+			[][]string{
+				{
+					"Welt, hallo!",
+					"Welt!",
+					"Welt! Hallo!",
+				},
+				{
+					"Dies ist der inoffizielle Go-Client für DeepL. Prost!",
+					"Dies ist der inoffizielle Go-Kunde für DeepL. Prost!",
+					"Dies ist der inoffizielle Go-Client für DeepL. Cheers!",
+					"Dies ist der inoffizielle Go-Kunde für DeepL. Cheers!",
+				},
+			},
+		},
+	}
+
+	cli := deepl.NewClient()
+
+	for i, test := range tests {
+		res, err := cli.TranslateBegin(test.Sentences, test.Beginnings, deepl.English, deepl.German)
+		if err != nil {
+			t.Errorf("Test %d: Unexpected error %s.", i+1, err.Error())
+			return
+		}
+		if !reflect.DeepEqual(test.Expected, res) {
+			for _, i := range res {
+				for _, j := range i {
+					fmt.Println(j)
+				}
+			}
 			t.Errorf("Test %d: Expected %v but got %v.", i+1, test.Expected, res)
 		}
 	}

@@ -14,7 +14,7 @@ type params struct {
 }
 
 type job struct {
-	DeSentenceBeginning string `json:"de_setence_beginning"`
+	DeSentenceBeginning string `json:"de_sentence_beginning"`
 	RawEnSentence       string `json:"raw_en_sentence"`
 	Kind                string `json:"kind"`
 }
