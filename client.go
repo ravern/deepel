@@ -69,28 +69,18 @@ func (cli *Client) Translate(stcs []string, source, target string) ([][]string, 
 	return cli.TranslateBegin(stcs, begin, source, target)
 }
 
-// TranslateBegin is the same as Translate, with the added constraint that
-// the result must start with the given beginnings.
-func (cli *Client) TranslateBegin(stcs, begin []string, source, target string) ([][]string, error) {
-	c := cli.newCall("LMT_handle_jobs")
-	c.Params.Lang.SourceLangUserSelected = source
-	c.Params.Lang.TargetLang = target
-
-	// Loop and add each sentence as a job
+func (c *call) addJobs(stcs, begin []string, kind string) {
 	for i, stc := range stcs {
 		j := job{
 			DeSentenceBeginning: begin[i],
 			RawEnSentence:       stc,
-			Kind:                "default",
+			Kind:                kind,
 		}
 		c.Params.Jobs = append(c.Params.Jobs, j)
 	}
+}
 
-	r, err := request(c, cli.Timeout)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *reply) mapTranslations() [][]string {
 	trans := [][]string{}
 	for _, t := range r.Result.Translations {
 		trans = append(trans, []string{})
@@ -99,6 +89,37 @@ func (cli *Client) TranslateBegin(stcs, begin []string, source, target string) (
 			trans[cur] = append(trans[cur], b.PostprocessedSentence)
 		}
 	}
+	return trans
+}
 
-	return trans, nil
+// TranslateBegin is the same as Translate, with the added constraint that the result
+// must start with the given beginnings.
+func (cli *Client) TranslateBegin(stcs, begin []string, source, target string) ([][]string, error) {
+	c := cli.newCall("LMT_handle_jobs")
+	c.Params.Lang.SourceLangUserSelected = source
+	c.Params.Lang.TargetLang = target
+	c.addJobs(stcs, begin, "default")
+
+	r, err := request(c, cli.Timeout)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.mapTranslations(), nil
+}
+
+// Alternatives returns the alternative beginnings to the given beginning in the context
+// of the sentence.
+func (cli *Client) Alternatives(stcs, begin []string, source, target string) ([][]string, error) {
+	c := cli.newCall("LMT_handle_jobs")
+	c.Params.Lang.SourceLangComputed = source
+	c.Params.Lang.TargetLang = target
+	c.addJobs(stcs, begin, "alternatives_at_position")
+
+	r, err := request(c, cli.Timeout)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.mapTranslations(), nil
 }
