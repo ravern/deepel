@@ -1,8 +1,3 @@
-# DeepL Golang Client
-Unofficial Golang client for the undocumented API of [deepl.com](http://deepl.com).
-
-## Usage
-```go
 package main
 
 import (
@@ -19,9 +14,3 @@ func main() {
 	res, _ := cli.Translate([]string{"Hello, world!"}, deepl.English, deepl.German)
 	fmt.Println(res[0])
 }
-```
-
-## Installation
-```
-$ go get github.com/ravernkoh/deepl
-```
