@@ -62,10 +62,7 @@ func (cli *Client) SplitIntoSentences(texts []string, lang string) ([][]string, 
 // returning all the possible translations. They are returned in descending order of
 // confidence (i.e. Most to least confident).
 func (cli *Client) Translate(stcs []string, source, target string) ([][]string, error) {
-	begin := []string{}
-	for _ = range stcs {
-		begin = append(begin, "")
-	}
+	begin := make([]string, len(stcs))
 	return cli.TranslateBegin(stcs, begin, source, target)
 }
 
