@@ -1,7 +1,7 @@
 [![](https://godoc.org/github.com/ravernkoh/deepl?status.svg)](http://godoc.org/github.com/ravernkoh/deepl)
 
-# DeepL Golang Client
-Unofficial Golang client for the undocumented API of [deepl.com](http://deepl.com).
+# DeepL Go Client
+Unofficial Go client for the private API of [deepl.com](http://deepl.com).
 
 ## Usage
 ```go
