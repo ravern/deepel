@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const url = "https://www.deepl.com/jsonrpc"
+const url = "https://www2.deepl.com/jsonrpc"
 
 func request(c call, timeout time.Duration) (reply, error) {
 	jsonStr, err := json.Marshal(c)
